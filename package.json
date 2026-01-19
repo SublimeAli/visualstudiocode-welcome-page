@@ -1,0 +1,51 @@
+{
+  "name": "vsc-welcome-page",
+  "displayName": "Custom Welcome Page",
+  "description": "A custom welcome page showing recent projects in a grid layout",
+  "version": "0.0.1",
+  "publisher": "AliMadjaji",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "customWelcome.show",
+        "title": "Show Custom Welcome Page"
+      }
+    ],
+    "configuration": {
+      "title": "Custom Welcome Page",
+      "properties": {
+        "customWelcome.maxProjects": {
+          "type": "number",
+          "default": 24,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Maximum number of recent projects to display"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
