@@ -4,6 +4,10 @@
   "description": "A custom welcome page showing recent projects in a grid layout",
   "version": "0.0.1",
   "publisher": "AliMadjaji",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SublimeAli/visualstudiocode-welcome-page"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
