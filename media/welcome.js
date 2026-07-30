@@ -5,10 +5,12 @@
     document.querySelectorAll('.project-card').forEach(card => {
         card.addEventListener('click', () => {
             const path = card.dataset.path;
-            if (path) {
+            const uri = card.dataset.uri;
+            if (uri) {
                 vscode.postMessage({
                     command: 'openProject',
-                    path: path
+                    path: path,
+                    uri: uri
                 });
             }
         });
