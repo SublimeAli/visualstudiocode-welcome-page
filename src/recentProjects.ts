@@ -4,6 +4,7 @@ import * as path from 'path';
 export interface RecentProject {
     name: string;
     path: string;
+    uri: string;
 }
 
 interface RecentlyOpenedItem {
@@ -49,9 +50,13 @@ export async function getRecentProjects(): Promise<RecentProject[]> {
             }
 
             if (folderPath) {
+                // Use item.folderUri directly for single-folder, or workspace.configPath for multi-root
+                const uri = item.folderUri ?? item.workspace?.configPath;
+                const isRemote = uri?.scheme === 'vscode-remote';
                 projects.push({
-                    name: path.basename(folderPath),
-                    path: folderPath
+                    name: path.basename(folderPath) + (isRemote ? ' [ssh]' : ''),
+                    path: folderPath,
+                    uri: uri ? uri.toString() : vscode.Uri.file(folderPath).toString()
                 });
             }
         }
