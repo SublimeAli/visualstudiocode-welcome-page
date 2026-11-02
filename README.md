@@ -8,6 +8,8 @@ A VS Code extension that replaces the default welcome page with a clean, customi
 
 - **Recent Projects Grid** - Quickly access your recent projects with a single click
 - **Search** - Filter recent projects by name or location as you type (press `/` to jump to the search box, `Enter` opens the first match, `Esc` clears). Search covers every recent project, not just the ones shown.
+- **Show all** - The page shows your 10 most recent projects; a button expands the list to show everything.
+- **Hover details** - Hovering a card shows the full name, full location and note, even when they're truncated.
 - **Sort** - Recently opened, Name (A–Z), Name (Z–A), or Location. Your choice is remembered.
 - **Pinned projects** - Star a project and it stays at the top, whatever the sort order, even if VS Code later drops it from its recent list.
 - **Missing-folder cleanup** - Projects whose folder was moved or deleted are dimmed and marked "Not found", with a button to remove them from the list.
@@ -23,7 +25,7 @@ A VS Code extension that replaces the default welcome page with a clean, customi
 
 | Setting | Description | Default |
 |---------|-------------|---------|
-| `customWelcome.maxProjects` | Number of most-recent projects shown by default (search still finds older ones) | 24 |
+| `customWelcome.maxProjects` | Number of most-recent projects shown before the "Show all" button (pinned projects are always shown) | 10 |
 
 ## Privacy & security
 

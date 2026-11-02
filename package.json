@@ -30,10 +30,10 @@
       "properties": {
         "customWelcome.maxProjects": {
           "type": "number",
-          "default": 24,
+          "default": 10,
           "minimum": 1,
           "maximum": 50,
-          "description": "Maximum number of recent projects to display"
+          "description": "Number of recent projects shown before the \"Show all\" button (pinned projects are always shown)"
         }
       }
     }

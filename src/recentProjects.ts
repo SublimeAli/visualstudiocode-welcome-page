@@ -205,5 +205,5 @@ export async function removeFromRecent(project: RecentProject): Promise<boolean>
 }
 
 export function getMaxProjects(): number {
-    return vscode.workspace.getConfiguration('customWelcome').get<number>('maxProjects', 24);
+    return vscode.workspace.getConfiguration('customWelcome').get<number>('maxProjects', 10);
 }

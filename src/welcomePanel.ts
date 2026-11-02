@@ -380,7 +380,9 @@ export class WelcomePanel {
                 ${projectCards}
             </div>
             <p class="no-projects" id="no-matches" hidden>No projects match your search</p>
-            <p class="list-hint" id="list-hint" hidden></p>
+            <div class="show-all-row">
+                <button type="button" class="show-all-btn" id="toggle-all" aria-expanded="false" hidden></button>
+            </div>
             <p class="keys-hint">Arrow keys move · 1–9 open · Shift+1–9 new window · P pin · T note/colour · / search</p>
         </section>
         ` : `
@@ -424,19 +426,18 @@ function renderCard(project: ProjectView): string {
             <div class="${classes}" data-id="${escapeHtml(project.id)}" data-name="${escapeHtml(project.name)}" data-path="${escapeHtml(project.displayPath)}" data-note="${escapeHtml(project.note ?? '')}" data-color="${escapeHtml(project.color ?? '')}" data-recency="${project.recencyIndex}" data-pinned="${project.pinned}" data-missing="${missing}">
                 <div class="project-main" tabindex="0" role="button" aria-label="Open ${escapeHtml(project.name)}">
                     <div class="project-icon">${project.kind === 'workspace' ? ICON_WORKSPACE : ICON_FOLDER}</div>
-                    <div class="project-info">
-                        <div class="project-name"><span class="project-title">${escapeHtml(project.name)}</span>${badges}</div>
-                        <div class="project-path">${escapeHtml(project.displayPath)}</div>
-                        <div class="project-extra">
-                            ${missing ? '<span class="missing-label">Not found</span>' : ''}
-                            <span class="project-note"${project.note ? '' : ' hidden'}>${escapeHtml(project.note ?? '')}</span>
-                        </div>
+                    <div class="project-name"><span class="project-title">${escapeHtml(project.name)}</span>${badges}</div>
+                    <div class="project-path">${escapeHtml(project.displayPath)}</div>
+                    <div class="project-footer">
+                        <span class="tag-dot" aria-hidden="true"></span>
+                        ${missing ? '<span class="missing-label">Not found</span>' : ''}
+                        <span class="project-note"${project.note ? '' : ' hidden'}>${escapeHtml(project.note ?? '')}</span>
+                        <span class="shortcut" aria-hidden="true"></span>
                     </div>
-                    <span class="shortcut" aria-hidden="true"></span>
                 </div>
                 <div class="card-actions">
                     <button type="button" class="icon-btn pin-btn" data-act="pin" tabindex="-1" title="${pinLabel} (P)" aria-label="${pinLabel}" aria-pressed="${project.pinned}">${ICON_PIN}</button>
-                    <button type="button" class="icon-btn" data-act="newWindow" tabindex="-1" title="Open in new window (Shift+1–9, Ctrl/Cmd+click)" aria-label="Open in new window">${ICON_WINDOW}</button>
+                    <button type="button" class="icon-btn" data-act="newWindow" tabindex="-1" title="Open in new window&#10;(Ctrl/Cmd+click, or Shift+1–9)" aria-label="Open in new window">${ICON_WINDOW}</button>
                     <button type="button" class="icon-btn" data-act="tag" tabindex="-1" title="Add note or colour (T)" aria-label="Add note or colour tag">${ICON_TAG}</button>
                     ${missing ? `<button type="button" class="icon-btn remove-btn" data-act="remove" tabindex="-1" title="Remove from list (Delete)" aria-label="Remove from list">${ICON_REMOVE}</button>` : ''}
                 </div>

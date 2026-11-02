@@ -22,7 +22,7 @@
     const search = document.getElementById('project-search');
     const sortSelect = document.getElementById('project-sort');
     const noMatches = document.getElementById('no-matches');
-    const hint = document.getElementById('list-hint');
+    const toggleAll = document.getElementById('toggle-all');
     const maxProjects = parseInt(section.dataset.max, 10) || 24;
     const cards = Array.from(grid.querySelectorAll('.project-card'));
     const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
@@ -31,6 +31,19 @@
     const isMissing = card => card.dataset.missing === 'true';
     const visibleCards = () => cards.filter(card => !card.hidden);
     const mainOf = card => card.querySelector('.project-main');
+
+    // "Show all" state is remembered across page rebuilds (not across sessions).
+    const saved = vscode.getState() || {};
+    let expanded = saved.expanded === true;
+    const saveState = () => vscode.setState({ query: search.value, expanded });
+
+    // Full name and full location on hover (the card itself truncates long ones).
+    function updateTooltip(card) {
+        const lines = [card.dataset.name, card.dataset.path];
+        if (card.dataset.note) { lines.push('Note: ' + card.dataset.note); }
+        if (isMissing(card)) { lines.push('Not found: the folder may have been moved or deleted'); }
+        card.title = lines.join('\n');
+    }
 
     // ---- Sorting: pinned projects always come first, then the chosen order ----
     const comparators = {
@@ -48,8 +61,19 @@
     }
 
     // ---- Filtering ----
+    // Collapsed view = the N most recent projects plus anything pinned.
+    function recentRanks() {
+        const ranks = new Map();
+        cards.slice()
+            .sort((a, b) => Number(a.dataset.recency) - Number(b.dataset.recency))
+            .forEach((card, index) => ranks.set(card, index));
+        return ranks;
+    }
+
     function applyFilter() {
         const query = search.value.trim().toLowerCase();
+        const ranks = recentRanks();
+        const inCollapsedView = card => isPinned(card) || ranks.get(card) < maxProjects;
         let visible = 0;
         cards.forEach(card => {
             let show;
@@ -59,7 +83,7 @@
                     card.dataset.path.toLowerCase().includes(query) ||
                     card.dataset.note.toLowerCase().includes(query);
             } else {
-                show = isPinned(card) || Number(card.dataset.recency) < maxProjects;
+                show = expanded || inCollapsedView(card);
             }
             card.hidden = !show;
             if (show) { visible++; }
@@ -73,13 +97,13 @@
             noMatches.hidden = visible > 0;
         }
 
-        const notShown = query ? 0 : cards.filter(c => !isPinned(c) && Number(c.dataset.recency) >= maxProjects).length;
-        if (notShown > 0) {
-            hint.textContent = notShown + ' older project' + (notShown === 1 ? ' is' : 's are') +
-                ' not shown. Search to find ' + (notShown === 1 ? 'it' : 'them') + '.';
-            hint.hidden = false;
+        const extra = cards.filter(card => !inCollapsedView(card)).length;
+        if (!query && extra > 0) {
+            toggleAll.textContent = expanded ? 'Show fewer' : 'Show all ' + cards.length + ' projects';
+            toggleAll.setAttribute('aria-expanded', String(expanded));
+            toggleAll.hidden = false;
         } else {
-            hint.hidden = true;
+            toggleAll.hidden = true;
         }
     }
 
@@ -162,6 +186,7 @@
             const noteEl = card.querySelector('.project-note');
             noteEl.textContent = note;     // textContent: never parsed as HTML
             noteEl.hidden = !note;
+            updateTooltip(card);
             applyFilter();
         } else if (message.command === 'removed') {
             const visible = visibleCards();
@@ -295,7 +320,7 @@
     search.addEventListener('input', () => {
         applyFilter();
         updateShortcuts();
-        vscode.setState({ query: search.value });
+        saveState();
     });
 
     search.addEventListener('keydown', event => {
@@ -303,7 +328,7 @@
             search.value = '';
             applyFilter();
             updateShortcuts();
-            vscode.setState({ query: '' });
+            saveState();
         } else if (event.key === 'Enter') {
             openCard(visibleCards()[0], event.metaKey || event.ctrlKey || event.shiftKey);
         } else if (event.key === 'ArrowDown') {
@@ -315,11 +340,18 @@
         }
     });
 
+    toggleAll.addEventListener('click', () => {
+        expanded = !expanded;
+        saveState();
+        applyFilter();
+        updateShortcuts();
+    });
+
     // The page is rebuilt whenever the tab is shown again; keep what was typed.
-    const saved = vscode.getState();
-    if (saved && typeof saved.query === 'string') {
+    if (typeof saved.query === 'string') {
         search.value = saved.query;
     }
 
+    cards.forEach(updateTooltip);
     refresh();
 })();
